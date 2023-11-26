@@ -7,11 +7,11 @@ import all
 
 app = Flask(__name__)
 
-@app.route("/")
-def Hello():
-    return "Hello"
+# @app.route("/")
+# def Hello():
+#     return "Hello"
 
-@app.route("/api", methods=["POST"])
+@app.route("/", methods=["POST"])
 def upload_image():
     try:
         if "file" not in request.files:
@@ -36,4 +36,4 @@ def upload_image():
         return jsonify({"error": str(e)}), 500
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", debug=True, port=80)
+    app.run(debug=True, port=80)
