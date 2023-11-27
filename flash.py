@@ -1,14 +1,16 @@
+# app.py
 from flask import Flask, request, jsonify
 import cv2
 import numpy as np
 import base64
 import all
-
+from config import Config
 
 app = Flask(__name__)
+app.config.from_object('config.Config')  # 使用配置文件
 
 @app.route("/")
-def Hello():
+def hello():
     return "Hello"
 
 @app.route("/api", methods=["POST"])
@@ -23,17 +25,18 @@ def upload_image():
         with open('1.jpg', 'wb') as file:
             jiema = base64.b64decode(base64_data)   # 解码
             file.write(jiema)
-        
+
         img_np = np.frombuffer(jiema, dtype=np.uint8)
-        # print("Before decoding:", img_decode_bytes)
         img = cv2.imdecode(img_np, cv2.IMREAD_COLOR)
-        # print("After decoding:", img)
 
-        # 在這裡可以使用 img 進行進一步的處理，例如應用你的機器學習模型
+        # 在这里可以使用 img 进行进一步的处理，例如应用你的机器学习模型
 
-        return jsonify({"message": "Image received successfully", "result" : all.start(img)})
+        return jsonify({"message": "Image received successfully", "result": all.start(img)})
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        # 记录异常到日志
+        app.logger.error(str(e))
+        return jsonify({"error": "Internal Server Error"}), 500
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=5001, debug = False)
+    # 使用 Gunicorn 启动应用程序
+    app.run(host='0.0.0.0', port=5001, debug=False)

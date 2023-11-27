@@ -11,6 +11,7 @@ def baisi(img):
     gray_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     #邊緣檢測
     edged_img = cv2.Canny(gray_img, 30, 500)
+    cv2.imwrite(f'./img/zzz_cut.jpg',edged_img)
     # cv2.imshow(f'gray',gray_img)
     
     #尋找輪廓
@@ -56,14 +57,19 @@ def sharpen(img, sigma=25):
     return usm
 
 def start(tmp):
-    cut_img=open_img(tmp)
+    #cut_img=open_img(tmp)
+    cut_img=cv2.imread('./img/x_cut.jpg')
     gray_cut = cv2.cvtColor(cut_img, cv2.COLOR_BGR2GRAY)
     # cv2.imshow(f'x_cut_gray',gray_cut)
     gray_cut_sharpen = sharpen(gray_cut)
     # cv2.imshow(f'x_cut_gray_sharpen',gray_cut_sharpen)
     ret, gray_cut_sharpen_threshold = cv2.threshold(gray_cut_sharpen, 125, 255, cv2.THRESH_BINARY)
-    cv2.imshow(f'x_cut_gray_sharpen_threshold',gray_cut_sharpen_threshold)
-    result = pytesseract.image_to_string(gray_cut_sharpen_threshold, lang="eng")
+    cv2.imwrite(f'./img/q_cut.jpg',gray_cut_sharpen_threshold)
+    AFTER_height, AFTER_width = gray_cut_sharpen_threshold.shape[:2]
+    cropped_image = gray_cut_sharpen_threshold[:int(AFTER_height/2), :]
+    cv2.imwrite(f'./img/q2_cut.jpg',cropped_image)
+    # cv2.imshow(f'x_cut_gray_sharpen_threshold',gray_cut_sharpen_threshold)
+    result = pytesseract.image_to_string(cropped_image, lang="eng")
     result=result.replace('\n','')
     print(result)
 
